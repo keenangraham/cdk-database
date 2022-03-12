@@ -1,19 +1,7 @@
-from aws_cdk import (
-    # Duration,
-    Stack,
-    # aws_sqs as sqs,
-)
-from constructs import Construct
+import aws_cdk as cdk
 
-class CdkDatabaseStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+class CdkDatabaseStack(cdk.Stack):
+
+    def __init__(self, scope, construct_id, **kwargs):
         super().__init__(scope, construct_id, **kwargs)
-
-        # The code that defines your stack goes here
-
-        # example resource
-        # queue = sqs.Queue(
-        #     self, "CdkDatabaseQueue",
-        #     visibility_timeout=Duration.seconds(300),
-        # )
