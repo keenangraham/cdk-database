@@ -2,7 +2,16 @@ import aws_cdk as cdk
 
 from constructs import Construct
 
+from aws_cdk.aws_ec2 import SubnetSelection
+from aws_cdk.aws_ec2 import SubnetType
+from aws_cdk.aws_ec2 import InstanceClass
+from aws_cdk.aws_ec2 import InstanceType
+from aws_cdk.aws_ec2 import InstanceSize
+
 from aws_cdk.aws_rds import AuroraCapacityUnit
+from aws_cdk.aws_rds import AuroraPostgresEngineVersion
+from aws_cdk.aws_rds import DatabaseCluster
+from aws_cdk.aws_rds import InstanceProps
 from aws_cdk.aws_rds import ServerlessCluster
 from aws_cdk.aws_rds import DatabaseClusterEngine
 from aws_cdk.aws_rds import ParameterGroup
@@ -41,4 +50,24 @@ class CdkDatabaseStack(cdk.Stack):
         vpcs = VPCs(
             self,
             'VPCs'
+        )
+        engine = DatabaseClusterEngine.aurora_postgres(
+            version=AuroraPostgresEngineVersion.VER_13_4
+        )
+        DatabaseCluster(
+            self,
+            'CDKTestDatabase',
+            engine=engine,
+            instances=1,
+            instance_props=InstanceProps(
+                instance_type=InstanceType.of(
+                    InstanceClass.BURSTABLE2,
+                    InstanceSize.SMALL
+                ),
+                vpc_subnets=SubnetSelection(
+                    subnet_type=SubnetType.PUBLIC,
+                ),
+                vpc=vpcs.default_vpc
+            ),
+            default_database_name='igvfd',
         )
