@@ -61,8 +61,8 @@ class CdkDatabaseStack(cdk.Stack):
             instances=1,
             instance_props=InstanceProps(
                 instance_type=InstanceType.of(
-                    InstanceClass.BURSTABLE2,
-                    InstanceSize.SMALL
+                    InstanceClass.BURSTABLE3,
+                    InstanceSize.MEDIUM,
                 ),
                 vpc_subnets=SubnetSelection(
                     subnet_type=SubnetType.PUBLIC,
