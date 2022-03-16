@@ -109,6 +109,7 @@ class CdkDatabaseStack(cdk.Stack):
             vpc_subnets=SubnetSelection(
                 subnet_type=SubnetType.PUBLIC,
             ),
+            allocated_storage=10,
             max_allocated_storage=20,
             security_groups=[
                 SecurityGroup.from_security_group_id(
