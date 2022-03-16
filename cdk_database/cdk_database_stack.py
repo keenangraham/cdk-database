@@ -12,6 +12,7 @@ from aws_cdk.aws_ec2 import SecurityGroup
 from aws_cdk.aws_rds import AuroraCapacityUnit
 from aws_cdk.aws_rds import AuroraPostgresEngineVersion
 from aws_cdk.aws_rds import DatabaseCluster
+from aws_cdk.aws_rds import DatabaseClusterFromSnapshot
 from aws_cdk.aws_rds import DatabaseInstance
 from aws_cdk.aws_rds import DatabaseInstanceFromSnapshot
 from aws_cdk.aws_rds import DatabaseInstanceEngine
@@ -139,4 +140,27 @@ class CdkDatabaseStack(cdk.Stack):
             security_groups=[
                 security_group,
             ],
+        )
+        cluster_engine = DatabaseClusterEngine.aurora_postgres(
+            version=AuroraPostgresEngineVersion.VER_13_4
+        )
+        DatabaseClusterFromSnapshot(
+            self,
+            'ClusterFromSnapshotDatabase',
+            engine=cluster_engine,
+            instances=1,
+            instance_props=InstanceProps(
+                instance_type=InstanceType.of(
+                    InstanceClass.BURSTABLE3,
+                    InstanceSize.MEDIUM,
+                ),
+                vpc_subnets=SubnetSelection(
+                    subnet_type=SubnetType.PUBLIC,
+                ),
+                vpc=vpcs.default_vpc,
+                security_groups=[
+                    security_group,
+                ]
+            ),
+            snapshot_identifier='arn:aws:rds:us-west-2:618537831167:snapshot:delme-test-snapshot',
         )
