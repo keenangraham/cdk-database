@@ -87,7 +87,7 @@ class ServerfulAurora(Construct):
         )
 
 
-class CdkDatabaseStack(cdk.Stack):
+class RDSInstance(Construct):
 
     def __init__(self, scope, construct_id, **kwargs):
         super().__init__(scope, construct_id, **kwargs)
@@ -96,13 +96,7 @@ class CdkDatabaseStack(cdk.Stack):
             'VPCs'
         )
         engine = DatabaseInstanceEngine.postgres(
-            version=PostgresEngineVersion.VER_13_4
-        )
-        security_group = SecurityGroup.from_security_group_id(
-            self,
-            'encd_sg',
-            'sg-022ea667',
-            mutable=False
+            version=PostgresEngineVersion.VER_14_1
         )
         DatabaseInstance(
             self,
@@ -120,15 +114,36 @@ class CdkDatabaseStack(cdk.Stack):
             allocated_storage=10,
             max_allocated_storage=20,
             security_groups=[
-                security_group,
+                SecurityGroup.from_security_group_id(
+                    self,
+                    'encd_sg',
+                    'sg-022ea667',
+                    mutable=False
+                ),
             ],
         )
+
+
+class CdkDatabaseStack(cdk.Stack):
+
+    def __init__(self, scope, construct_id, **kwargs):
+        super().__init__(scope, construct_id, **kwargs)
+        vpcs = VPCs(
+            self,
+            'VPCs'
+        )
+        security_group = SecurityGroup.from_security_group_id(
+            self,
+            'encd_sg',
+            'sg-022ea667',
+            mutable=False
+        )
         snapshot_engine = DatabaseInstanceEngine.postgres(
-            version=PostgresEngineVersion.VER_13_4
+            version=PostgresEngineVersion.VER_14_1
         )
         DatabaseInstanceFromSnapshot(
             self, 'CDKRestoreSnapShotTest',
-            snapshot_identifier='delme-test-snapshot',
+            snapshot_identifier='delme-snapshot-11',
             engine=snapshot_engine,
             instance_type=InstanceType.of(
                 InstanceClass.BURSTABLE3,
@@ -144,27 +159,26 @@ class CdkDatabaseStack(cdk.Stack):
                 security_group,
             ],
         )
-#        cluster_engine = DatabaseClusterEngine.aurora_postgres(
-#            version=AuroraPostgresEngineVersion.VER_13_4
-#        )
-##        DatabaseClusterFromSnapshot(
-#            self,
-#            'ClusterFromSnapshotDatabase',
-#            engine=cluster_engine,
-#            instances=1,
-#            instance_props=InstanceProps(
-#                instance_type=InstanceType.of(
-#                    InstanceClass.BURSTABLE3,
-#                    InstanceSize.MEDIUM,
-#                ),
-#                vpc_subnets=SubnetSelection(
-#                    subnet_type=SubnetType.PUBLIC,
-#                ),
-#                vpc=vpcs.default_vpc,
-#                security_groups=[
-#                    security_group,
-#                ]
-#            ),
-#            snapshot_identifier='arn:aws:rds:us-west-2:618537831167:snapshot:delme-test-snapshot',
-#        )
-#
+        cluster_engine = DatabaseClusterEngine.aurora_postgres(
+            version=AuroraPostgresEngineVersion.VER_11_12
+        )
+        DatabaseClusterFromSnapshot(
+            self,
+            'ClusterFromSnapshotDatabase',
+            engine=cluster_engine,
+            instances=1,
+            instance_props=InstanceProps(
+                instance_type=InstanceType.of(
+                    InstanceClass.BURSTABLE3,
+                    InstanceSize.MEDIUM,
+                ),
+                vpc_subnets=SubnetSelection(
+                    subnet_type=SubnetType.PUBLIC,
+                ),
+                vpc=vpcs.default_vpc,
+                security_groups=[
+                    security_group,
+                ]
+            ),
+            snapshot_identifier='arn:aws:rds:us-west-2:618537831167:snapshot:delme-snapshot-11',
+        )
