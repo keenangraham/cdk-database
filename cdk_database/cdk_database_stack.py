@@ -59,7 +59,7 @@ class CdkDatabaseStack(cdk.Stack):
             self,
             'CDKTestDatabase',
             engine=engine,
-            instances=3,
+            instances=2,
             instance_props=InstanceProps(
                 instance_type=InstanceType.of(
                     InstanceClass.BURSTABLE3,
@@ -73,7 +73,7 @@ class CdkDatabaseStack(cdk.Stack):
                     SecurityGroup.from_security_group_id(
                         self,
                         'encd_sg',
-                        'sg-022ea667',
+                        'gsg-022ea667',
                         mutable=False
                     )
                 ]
