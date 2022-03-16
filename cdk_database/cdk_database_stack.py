@@ -13,6 +13,7 @@ from aws_cdk.aws_rds import AuroraCapacityUnit
 from aws_cdk.aws_rds import AuroraPostgresEngineVersion
 from aws_cdk.aws_rds import DatabaseCluster
 from aws_cdk.aws_rds import DatabaseInstance
+from aws_cdk.aws_rds import DatabaseInstanceFromSnapshot
 from aws_cdk.aws_rds import DatabaseInstanceEngine
 from aws_cdk.aws_rds import InstanceProps
 from aws_cdk.aws_rds import ServerlessCluster
@@ -96,6 +97,12 @@ class CdkDatabaseStack(cdk.Stack):
         engine = DatabaseInstanceEngine.postgres(
             version=PostgresEngineVersion.VER_14_1
         )
+        security_group = SecurityGroup.from_security_group_id(
+            self,
+            'encd_sg',
+            'sg-022ea667',
+            mutable=False
+        )
         DatabaseInstance(
             self,
             'CDKTestInstance',
@@ -112,11 +119,24 @@ class CdkDatabaseStack(cdk.Stack):
             allocated_storage=10,
             max_allocated_storage=20,
             security_groups=[
-                SecurityGroup.from_security_group_id(
-                    self,
-                    'encd_sg',
-                    'sg-022ea667',
-                    mutable=False
-                )
+                security_group,
+            ],
+        )
+        DatabaseInstanceFromSnapshot(
+            self, 'CDKRestoreSnapShotTest',
+            snapshot_identifier='delme-test-snapshot',
+            engine=engine,
+            instance_type=InstanceType.of(
+                InstanceClass.BURSTABLE3,
+                InstanceSize.MEDIUM,
+            ),
+            vpc=vpcs.default_vpc,
+            vpc_subnets=SubnetSelection(
+                subnet_type=SubnetType.PUBLIC,
+            ),
+            allocated_storage=10,
+            max_allocated_storage=20,
+            security_groups=[
+                security_group,
             ],
         )
