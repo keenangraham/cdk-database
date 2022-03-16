@@ -96,7 +96,7 @@ class CdkDatabaseStack(cdk.Stack):
             'VPCs'
         )
         engine = DatabaseInstanceEngine.postgres(
-            version=PostgresEngineVersion.VER_14_1
+            version=PostgresEngineVersion.VER_13_4
         )
         security_group = SecurityGroup.from_security_group_id(
             self,
@@ -123,10 +123,13 @@ class CdkDatabaseStack(cdk.Stack):
                 security_group,
             ],
         )
+        snapshot_engine = DatabaseInstanceEngine.postgres(
+            version=PostgresEngineVersion.VER_13_4
+        )
         DatabaseInstanceFromSnapshot(
             self, 'CDKRestoreSnapShotTest',
             snapshot_identifier='delme-test-snapshot',
-            engine=engine,
+            engine=snapshot_engine,
             instance_type=InstanceType.of(
                 InstanceClass.BURSTABLE3,
                 InstanceSize.MEDIUM,
@@ -141,26 +144,27 @@ class CdkDatabaseStack(cdk.Stack):
                 security_group,
             ],
         )
-        cluster_engine = DatabaseClusterEngine.aurora_postgres(
-            version=AuroraPostgresEngineVersion.VER_13_4
-        )
-        DatabaseClusterFromSnapshot(
-            self,
-            'ClusterFromSnapshotDatabase',
-            engine=cluster_engine,
-            instances=1,
-            instance_props=InstanceProps(
-                instance_type=InstanceType.of(
-                    InstanceClass.BURSTABLE3,
-                    InstanceSize.MEDIUM,
-                ),
-                vpc_subnets=SubnetSelection(
-                    subnet_type=SubnetType.PUBLIC,
-                ),
-                vpc=vpcs.default_vpc,
-                security_groups=[
-                    security_group,
-                ]
-            ),
-            snapshot_identifier='arn:aws:rds:us-west-2:618537831167:snapshot:delme-test-snapshot',
-        )
+#        cluster_engine = DatabaseClusterEngine.aurora_postgres(
+#            version=AuroraPostgresEngineVersion.VER_13_4
+#        )
+##        DatabaseClusterFromSnapshot(
+#            self,
+#            'ClusterFromSnapshotDatabase',
+#            engine=cluster_engine,
+#            instances=1,
+#            instance_props=InstanceProps(
+#                instance_type=InstanceType.of(
+#                    InstanceClass.BURSTABLE3,
+#                    InstanceSize.MEDIUM,
+#                ),
+#                vpc_subnets=SubnetSelection(
+#                    subnet_type=SubnetType.PUBLIC,
+#                ),
+#                vpc=vpcs.default_vpc,
+#                security_groups=[
+#                    security_group,
+#                ]
+#            ),
+#            snapshot_identifier='arn:aws:rds:us-west-2:618537831167:snapshot:delme-test-snapshot',
+#        )
+#
