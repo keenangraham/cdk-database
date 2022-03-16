@@ -12,10 +12,13 @@ from aws_cdk.aws_ec2 import SecurityGroup
 from aws_cdk.aws_rds import AuroraCapacityUnit
 from aws_cdk.aws_rds import AuroraPostgresEngineVersion
 from aws_cdk.aws_rds import DatabaseCluster
+from aws_cdk.aws_rds import DatabaseInstance
+from aws_cdk.aws_rds import DatabaseInstanceEngine
 from aws_cdk.aws_rds import InstanceProps
 from aws_cdk.aws_rds import ServerlessCluster
 from aws_cdk.aws_rds import DatabaseClusterEngine
 from aws_cdk.aws_rds import ParameterGroup
+from aws_cdk.aws_rds import PostgresEngineVersion
 from aws_cdk.aws_rds import ServerlessScalingOptions
 
 from shared_infrastructure.cherry_lab.vpcs import VPCs
@@ -44,7 +47,7 @@ class ServerlessAurora(Construct):
         )
 
 
-class CdkDatabaseStack(cdk.Stack):
+class ServerfulAurora(Construct):
 
     def __init__(self, scope, construct_id, **kwargs):
         super().__init__(scope, construct_id, **kwargs)
@@ -79,4 +82,40 @@ class CdkDatabaseStack(cdk.Stack):
                 ]
             ),
             default_database_name='igvfd',
+        )
+
+
+class CdkDatabaseStack(cdk.Stack):
+
+    def __init__(self, scope, construct_id, **kwargs):
+        super().__init__(scope, construct_id, **kwargs)
+        vpcs = VPCs(
+            self,
+            'VPCs'
+        )
+        engine = DatabaseInstanceEngine.postgres(
+            version=PostgresEngineVersion.VER_14_1
+        )
+        DatabaseInstance(
+            self,
+            'CDKTestInstance',
+            database_name='igvfd',
+            engine=engine,
+            instance_type=InstanceType.of(
+                InstanceClass.BURSTABLE3,
+                InstanceSize.MEDIUM,
+            ),
+            vpc=vpcs.default_vpc,
+            vpc_subnets=SubnetSelection(
+                subnet_type=SubnetType.PUBLIC,
+            ),
+            max_allocated_storage=20,
+            security_groups=[
+                SecurityGroup.from_security_group_id(
+                    self,
+                    'encd_sg',
+                    'sg-022ea667',
+                    mutable=False
+                )
+            ],
         )
