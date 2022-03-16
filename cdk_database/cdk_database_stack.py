@@ -73,7 +73,7 @@ class CdkDatabaseStack(cdk.Stack):
                     SecurityGroup.from_security_group_id(
                         self,
                         'encd_sg',
-                        'gsg-022ea667',
+                        'sg-022ea667',
                         mutable=False
                     )
                 ]
