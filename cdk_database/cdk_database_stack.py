@@ -58,7 +58,7 @@ class CdkDatabaseStack(cdk.Stack):
             self,
             'CDKTestDatabase',
             engine=engine,
-            instances=1,
+            instances=2,
             instance_props=InstanceProps(
                 instance_type=InstanceType.of(
                     InstanceClass.BURSTABLE3,
