@@ -7,6 +7,7 @@ from aws_cdk.aws_ec2 import SubnetType
 from aws_cdk.aws_ec2 import InstanceClass
 from aws_cdk.aws_ec2 import InstanceType
 from aws_cdk.aws_ec2 import InstanceSize
+from aws_cdk.aws_ec2 import SecurityGroup
 
 from aws_cdk.aws_rds import AuroraCapacityUnit
 from aws_cdk.aws_rds import AuroraPostgresEngineVersion
@@ -58,7 +59,7 @@ class CdkDatabaseStack(cdk.Stack):
             self,
             'CDKTestDatabase',
             engine=engine,
-            instances=2,
+            instances=3,
             instance_props=InstanceProps(
                 instance_type=InstanceType.of(
                     InstanceClass.BURSTABLE3,
@@ -67,7 +68,15 @@ class CdkDatabaseStack(cdk.Stack):
                 vpc_subnets=SubnetSelection(
                     subnet_type=SubnetType.PUBLIC,
                 ),
-                vpc=vpcs.default_vpc
+                vpc=vpcs.default_vpc,
+                security_groups=[
+                    SecurityGroup.from_security_group_id(
+                        self,
+                        'encd_sg',
+                        'sg-022ea667',
+                        mutable=False
+                    )
+                ]
             ),
             default_database_name='igvfd',
         )
