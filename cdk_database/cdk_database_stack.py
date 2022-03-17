@@ -160,7 +160,7 @@ class CdkDatabaseStack(cdk.Stack):
             ],
         )
         cluster_engine = DatabaseClusterEngine.aurora_postgres(
-            version=AuroraPostgresEngineVersion.VER_13_4
+            version=AuroraPostgresEngineVersion.VER_11_13
         )
         DatabaseClusterFromSnapshot(
             self,
