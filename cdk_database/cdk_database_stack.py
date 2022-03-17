@@ -139,7 +139,7 @@ class CdkDatabaseStack(cdk.Stack):
             mutable=False
         )
         snapshot_engine = DatabaseInstanceEngine.postgres(
-            version=PostgresEngineVersion.VER_14_1
+            version=PostgresEngineVersion.VER_11_12
         )
         DatabaseInstanceFromSnapshot(
             self, 'CDKRestoreSnapShotTest',
@@ -153,8 +153,8 @@ class CdkDatabaseStack(cdk.Stack):
             vpc_subnets=SubnetSelection(
                 subnet_type=SubnetType.PUBLIC,
             ),
-            allocated_storage=10,
-            max_allocated_storage=20,
+            allocated_storage=20,
+            max_allocated_storage=30,
             security_groups=[
                 security_group,
             ],
